@@ -1,13 +1,14 @@
-package GUI.FileList;
+package FileTP_Front.GUI.FileList;
 
 import sun.awt.shell.ShellFolder;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class ListRender extends DefaultListCellRenderer {
+public class FileListRender extends DefaultListCellRenderer {
 
 	private ImageIcon getBigIcon(File f)
 	{
@@ -23,19 +24,25 @@ public class ListRender extends DefaultListCellRenderer {
 		return null;
 	}
 
+	private Icon getSmallIcon(File f)
+	{
+		if (f!= null && f.exists())
+		{
+			FileSystemView fsv = FileSystemView.getFileSystemView();
+			return fsv.getSystemIcon(f);
+		}
+		return null;
+	}
+
 	@Override
 	public Component getListCellRendererComponent(JList<? extends Object> list,Object value,int index,boolean isSelected,boolean cellHasFocus) {
 
+		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		File f = (File)value;
+
 		ImageIcon ico = getBigIcon(f);
 		setIcon(ico);
 		setText(f.getName());
-
-		setBackground(Color.WHITE);
-		if (isSelected)
-		{
-			setBackground(Color.GRAY);
-		}
 
 		return this;
 	}

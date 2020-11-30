@@ -1,4 +1,4 @@
-package GUI.FileList;
+package FileTP_Front.GUI.FileList;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package GUI.FileList;
+package FileTP_Front.GUI.FileList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,56 +22,58 @@ public class FileListView extends JList<File> {
 		setListData(mFiles);
 		setFont(new Font("宋体", Font.PLAIN, 20));
 
-		ListRender listRender = new ListRender();
+		FileListRender listRender = new FileListRender();
 		setCellRenderer(listRender);
-		addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
+		addMouseListener(new FileListMouseListener());
+	}
+
+	private class FileListMouseListener implements MouseListener {
+
+		public void mouseClicked(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
+			{
+				int index = getSelectedIndex();
+				File f_sel = mFiles.get(index);
+				mCallback.ItemDBClick(f_sel);
+			}
+			else if (e.getButton() == MouseEvent.BUTTON3)
+			{
+				int index = locationToIndex(e.getPoint());
+				setSelectedIndex(index);
+				if (mRightPopMenu != null)
 				{
-					int index = getSelectedIndex();
-					File f_sel = mFiles.get(index);
-					mCallback.ItemDBClick(f_sel);
+					mRightPopMenu.show(FileListView.this, e.getX(), e.getY());
 				}
-				else if (e.getButton() == MouseEvent.BUTTON3)
-				{
-					int index = locationToIndex(e.getPoint());
-					setSelectedIndex(index);
-					if (mRightPopMenu != null)
-					{
-						mRightPopMenu.show(FileListView.this, e.getX(), e.getY());
-					}
-				}
-				else if (e.getButton() == 4)
-				{
-					backParent();
-				}
+			}
+			else if (e.getButton() == 4)
+			{
+				backParent();
+			}
 //				else
 //				{
 //					System.out.println(e.getButton());
 //				}
-			}
+		}
 
-			@Override
-			public void mousePressed(MouseEvent e) {
+		@Override
+		public void mousePressed(MouseEvent e) {
 
-			}
+		}
 
-			@Override
-			public void mouseReleased(MouseEvent e) {
+		@Override
+		public void mouseReleased(MouseEvent e) {
 
-			}
+		}
 
-			@Override
-			public void mouseEntered(MouseEvent e) {
+		@Override
+		public void mouseEntered(MouseEvent e) {
 
-			}
+		}
 
-			@Override
-			public void mouseExited(MouseEvent e) {
+		@Override
+		public void mouseExited(MouseEvent e) {
 
-			}
-		});
+		}
 	}
 
 	public FileListView(FileListViewCallback callback)
@@ -106,23 +108,23 @@ public class FileListView extends JList<File> {
 		return f.isHidden();
 	}
 
-	public void changeDir(File root)
+	public void changeDir(File path)
 	{
-		if (root == null) return;
-		if (!root.exists()) return;
-		if (!root.isDirectory()) return;
+		if (path == null) return;
+		if (!path.exists()) return;
+		if (!path.isDirectory()) return;
 
 		mFiles.clear();
-		mFiles.add(new File(root, "."));
-		mFiles.add(new File(root, ".."));
-		for (File e : Objects.requireNonNull(root.listFiles()))
+		mFiles.add(new File(path, "."));
+		mFiles.add(new File(path, ".."));
+		for (File e : Objects.requireNonNull(path.listFiles()))
 		{
 			if (isFileHide(e)) continue;
 			mFiles.add(e);
 		}
 		updateUI();
-		mCurrentPath = root;
-		mCallback.pathChanged(root);
+		mCurrentPath = path;
+		mCallback.pathChanged(path);
 	}
 
 	public File getCurrentPath()
@@ -132,7 +134,10 @@ public class FileListView extends JList<File> {
 
 	public void backParent()
 	{
-		if (mCurrentPath == null) return;
+		if (mCurrentPath == null)
+		{
+			return;
+		}
 		changeDir(mCurrentPath.getParentFile());
 	}
 

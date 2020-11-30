@@ -1,6 +1,6 @@
-import GUI.MainWindow;
+package FileTP_Front;
 
-import javax.swing.*;
+import FileTP_Front.GUI.MainWindow;
 
 public class MainEntry {
 	public static void main(String[] args)
