@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.Objects;
 import java.util.Vector;
@@ -14,6 +15,7 @@ public class FileListView extends JList<File> {
 	private Vector<File> mFiles;
 	private FileListViewCallback mCallback;
 	private JPopupMenu mRightPopMenu = null;
+	private Boolean mOneClickMode = false;
 
 	private void listInit()
 	{
@@ -24,35 +26,43 @@ public class FileListView extends JList<File> {
 
 		FileListRender listRender = new FileListRender();
 		setCellRenderer(listRender);
-		addMouseListener(new FileListMouseListener());
+
+		setClickMode(false);
+
 	}
 
-	private class FileListMouseListener implements MouseListener {
+	private void doMainAction()
+	{
+		int index = getSelectedIndex();
+		File f_sel = mFiles.get(index);
+		mCallback.itemTriggered(f_sel);
+	}
+
+	private void showPopupMenu(Point pos)
+	{
+		if (mRightPopMenu != null)
+		{
+			mRightPopMenu.show(FileListView.this, pos.x, pos.y);
+		}
+	}
+
+	private class DBClickMouseListener implements MouseListener {
 
 		public void mouseClicked(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
 			{
-				int index = getSelectedIndex();
-				File f_sel = mFiles.get(index);
-				mCallback.ItemDBClick(f_sel);
+				doMainAction();
 			}
 			else if (e.getButton() == MouseEvent.BUTTON3)
 			{
 				int index = locationToIndex(e.getPoint());
 				setSelectedIndex(index);
-				if (mRightPopMenu != null)
-				{
-					mRightPopMenu.show(FileListView.this, e.getX(), e.getY());
-				}
+				showPopupMenu(e.getPoint());
 			}
 			else if (e.getButton() == 4)
 			{
 				backParent();
 			}
-//				else
-//				{
-//					System.out.println(e.getButton());
-//				}
 		}
 
 		@Override
@@ -73,6 +83,99 @@ public class FileListView extends JList<File> {
 		@Override
 		public void mouseExited(MouseEvent e) {
 
+		}
+	}
+
+	private class DBClickMotionListener implements MouseMotionListener {
+
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e)
+		{
+
+		}
+	}
+
+	private class OneClickMouseMothonListener implements MouseMotionListener {
+
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e)
+		{
+			int index = locationToIndex(e.getPoint());
+			setSelectedIndex(index);
+		}
+	}
+
+	private class OneClickMouseListener implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+			if (e.getButton() == MouseEvent.BUTTON1)
+			{
+				doMainAction();
+			}
+			else if (e.getButton() == MouseEvent.BUTTON2)
+			{
+				showPopupMenu(e.getPoint());
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+
+		}
+	}
+
+	public void setClickMode(Boolean isDbClick)
+	{
+		for (MouseMotionListener e : getMouseMotionListeners())
+		{
+			removeMouseMotionListener(e);
+		}
+		for (MouseListener e : getMouseListeners())
+		{
+			removeMouseListener(e);
+		}
+
+		if (isDbClick)
+		{
+			addMouseMotionListener(new DBClickMotionListener());
+			addMouseListener(new DBClickMouseListener());
+		}
+		else
+		{
+			addMouseListener(new OneClickMouseListener());
+			addMouseMotionListener(new OneClickMouseMothonListener());
 		}
 	}
 

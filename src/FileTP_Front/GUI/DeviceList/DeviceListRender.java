@@ -50,6 +50,9 @@ public class DeviceListRender extends DefaultListCellRenderer {
 			case Device.PLATFORM_APPLE:
 				ico = loader.loadIcon("apple.png");
 				break;
+			default:
+				ico = loader.loadIcon("none.jpg");
+				break;
 		}
 
 		if (ico != null)

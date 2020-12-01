@@ -20,11 +20,20 @@ public class DeviceListView extends JList<Device> {
 
 	}
 
-
 	public void addDevice(Device dev)
 	{
 		mDevices.add(dev);
 		updateUI();
+	}
+
+	public void delDevice(Device dev)
+	{
+		mDevices.remove(dev);
+	}
+
+	public void delDevice(int index)
+	{
+		mDevices.remove(index);
 	}
 
 	public void clearList()
