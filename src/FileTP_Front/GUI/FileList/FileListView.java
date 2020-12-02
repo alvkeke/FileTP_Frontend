@@ -67,7 +67,11 @@ public class FileListView extends JList<File> {
 			}
 			else if (e.getButton() == 4)
 			{
-				backParent();
+				mCallback.btn4Clicked();
+			}
+			else if (e.getButton() == 5)
+			{
+				mCallback.btn5Clicked();
 			}
 		}
 
@@ -120,6 +124,14 @@ public class FileListView extends JList<File> {
 			else if (e.getButton() == MouseEvent.BUTTON2)
 			{
 				showPopupMenu(e.getPoint());
+			}
+			else if (e.getButton() == 4)
+			{
+				mCallback.btn4Clicked();
+			}
+			else if (e.getButton() == 5)
+			{
+				mCallback.btn5Clicked();
 			}
 		}
 
@@ -220,7 +232,7 @@ public class FileListView extends JList<File> {
 
 		refreshDirectory(path);
 
-		if (mHistoryIndex + 1 > 0)
+		if (mHistoryIndex >= 0)
 		{
 			mHistory.setSize(mHistoryIndex+1);
 			mHistory.trimToSize();
@@ -229,12 +241,11 @@ public class FileListView extends JList<File> {
 		{
 			mHistory.clear();
 		}
-		if (mCurrentPath != null)
-		{
-			mHistory.add(mCurrentPath);
-			mHistoryIndex = mHistory.size() - 1;    // index of last element
-		}
 		mCurrentPath = path;
+		mHistory.add(mCurrentPath);
+		mHistoryIndex = mHistory.size() - 1;    // index of last element
+		System.out.println(mHistory);
+		System.out.println(mHistoryIndex);
 		mCallback.pathChanged(path);
 	}
 
@@ -247,6 +258,7 @@ public class FileListView extends JList<File> {
 	{
 		if (mHistoryIndex<=0) return;
 		File path = mHistory.elementAt(--mHistoryIndex);
+		mCurrentPath = path;
 		refreshDirectory(path);
 		mCallback.pathChanged(path);
 	}
@@ -255,6 +267,7 @@ public class FileListView extends JList<File> {
 	{
 		if (mHistoryIndex>=mHistory.size()-1) return;
 		File path = mHistory.elementAt(++mHistoryIndex);
+		mCurrentPath = path;
 		refreshDirectory(path);
 		mCallback.pathChanged(path);
 	}

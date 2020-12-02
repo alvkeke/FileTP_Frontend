@@ -122,4 +122,17 @@ public class MainWindow extends JFrame implements FileListViewCallback {
 		if (mTxtPath == null) return;
 		mTxtPath.setText(path.getAbsolutePath());
 	}
+
+	@Override
+	public void btn4Clicked()
+	{
+		mFileList.toBackward();
+	}
+
+	@Override
+	public void btn5Clicked()
+	{
+		mFileList.toForward();
+	}
+
 }
