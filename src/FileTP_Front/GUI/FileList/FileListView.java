@@ -1,5 +1,7 @@
 package FileTP_Front.GUI.FileList;
 
+import com.sun.istack.internal.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -13,6 +15,8 @@ public class FileListView extends JList<File> {
 
 	private File mCurrentPath = null;
 	private Vector<File> mFiles;
+	private Vector<File> mHistory;
+	private int mHistoryIndex = -1;
 	private FileListViewCallback mCallback;
 	private JPopupMenu mRightPopMenu = null;
 	private Boolean mOneClickMode = false;
@@ -20,6 +24,7 @@ public class FileListView extends JList<File> {
 	private void listInit()
 	{
 		mFiles = new Vector<>();
+		mHistory = new Vector<>();
 
 		setListData(mFiles);
 		setFont(new Font("宋体", Font.PLAIN, 20));
@@ -28,6 +33,7 @@ public class FileListView extends JList<File> {
 		setCellRenderer(listRender);
 
 		setClickMode(false);
+		// one click mode by default.
 
 	}
 
@@ -86,22 +92,7 @@ public class FileListView extends JList<File> {
 		}
 	}
 
-	private class DBClickMotionListener implements MouseMotionListener {
-
-		@Override
-		public void mouseDragged(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e)
-		{
-
-		}
-	}
-
-	private class OneClickMouseMothonListener implements MouseMotionListener {
+	private class OneClickMouseMotionListener implements MouseMotionListener {
 
 		@Override
 		public void mouseDragged(MouseEvent e)
@@ -169,13 +160,12 @@ public class FileListView extends JList<File> {
 
 		if (isDbClick)
 		{
-			addMouseMotionListener(new DBClickMotionListener());
 			addMouseListener(new DBClickMouseListener());
 		}
 		else
 		{
 			addMouseListener(new OneClickMouseListener());
-			addMouseMotionListener(new OneClickMouseMothonListener());
+			addMouseMotionListener(new OneClickMouseMotionListener());
 		}
 	}
 
@@ -200,7 +190,7 @@ public class FileListView extends JList<File> {
 	{
 		this.mCallback = callback;
 		listInit();
-		if (rootPath.exists() && rootPath.isDirectory())
+		if (rootPath != null && rootPath.exists() && rootPath.isDirectory())
 		{
 			changeDir(rootPath);
 		}
@@ -211,21 +201,39 @@ public class FileListView extends JList<File> {
 		return f.isHidden();
 	}
 
-	public void changeDir(File path)
+	private void refreshDirectory(@NotNull File path)
 	{
-		if (path == null) return;
-		if (!path.exists()) return;
-		if (!path.isDirectory()) return;
-
 		mFiles.clear();
-		mFiles.add(new File(path, "."));
-		mFiles.add(new File(path, ".."));
 		for (File e : Objects.requireNonNull(path.listFiles()))
 		{
 			if (isFileHide(e)) continue;
 			mFiles.add(e);
 		}
 		updateUI();
+	}
+
+	public void changeDir(File path)
+	{
+		if (path == null) return;
+		if (!path.exists()) return;
+		if (!path.isDirectory()) return;
+
+		refreshDirectory(path);
+
+		if (mHistoryIndex + 1 > 0)
+		{
+			mHistory.setSize(mHistoryIndex+1);
+			mHistory.trimToSize();
+		}
+		else
+		{
+			mHistory.clear();
+		}
+		if (mCurrentPath != null)
+		{
+			mHistory.add(mCurrentPath);
+			mHistoryIndex = mHistory.size() - 1;    // index of last element
+		}
 		mCurrentPath = path;
 		mCallback.pathChanged(path);
 	}
@@ -233,6 +241,22 @@ public class FileListView extends JList<File> {
 	public File getCurrentPath()
 	{
 		return mCurrentPath;
+	}
+
+	public void toBackward()
+	{
+		if (mHistoryIndex<=0) return;
+		File path = mHistory.elementAt(--mHistoryIndex);
+		refreshDirectory(path);
+		mCallback.pathChanged(path);
+	}
+
+	public void toForward()
+	{
+		if (mHistoryIndex>=mHistory.size()-1) return;
+		File path = mHistory.elementAt(++mHistoryIndex);
+		refreshDirectory(path);
+		mCallback.pathChanged(path);
 	}
 
 	public void backParent()
