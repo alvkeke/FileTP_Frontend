@@ -7,8 +7,11 @@ import FileTP_Front.Net.Device;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.net.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 public class MainWindow extends JFrame implements FileListViewCallback {
 
@@ -96,7 +99,12 @@ public class MainWindow extends JFrame implements FileListViewCallback {
 
 		mBtnGoto.addActionListener(e -> {
 			File f = new File(mTxtPath.getText());
-			if (!f.exists()) return;
+			if (!f.exists())
+			{
+				f = mFileList.getCurrentPath();
+				mTxtPath.setText(f.getPath());
+				return;
+			}
 			if (f.isDirectory())
 			{
 				mFileList.changeDir(f);
@@ -106,6 +114,19 @@ public class MainWindow extends JFrame implements FileListViewCallback {
 				mFileList.changeDir(f.getParentFile());
 			}
 
+		});
+
+		mTxtPath.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				super.keyPressed(e);
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					mBtnGoto.doClick();
+				}
+			}
 		});
 
 		this.setVisible(true);

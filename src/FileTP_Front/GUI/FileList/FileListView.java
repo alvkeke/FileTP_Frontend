@@ -4,9 +4,7 @@ import com.sun.istack.internal.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.io.File;
 import java.util.Objects;
 import java.util.Vector;
@@ -17,9 +15,8 @@ public class FileListView extends JList<File> {
 	private Vector<File> mFiles;
 	private Vector<File> mHistory;
 	private int mHistoryIndex = -1;
-	private FileListViewCallback mCallback;
+	private final FileListViewCallback mCallback;
 	private JPopupMenu mRightPopMenu = null;
-	private Boolean mOneClickMode = false;
 
 	private void listInit()
 	{
@@ -52,7 +49,7 @@ public class FileListView extends JList<File> {
 		}
 	}
 
-	private class DBClickMouseListener implements MouseListener {
+	private class DBClickMouseListener extends MouseAdapter{
 
 		public void mouseClicked(MouseEvent e) {
 			if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2)
@@ -75,34 +72,10 @@ public class FileListView extends JList<File> {
 			}
 		}
 
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
 	}
 
-	private class OneClickMouseMotionListener implements MouseMotionListener {
-
-		@Override
-		public void mouseDragged(MouseEvent e)
-		{
-
-		}
+	private class OneClickMouseMotionListener extends MouseMotionAdapter
+	{
 
 		@Override
 		public void mouseMoved(MouseEvent e)
@@ -112,7 +85,7 @@ public class FileListView extends JList<File> {
 		}
 	}
 
-	private class OneClickMouseListener implements MouseListener {
+	private class OneClickMouseListener extends MouseAdapter {
 
 		@Override
 		public void mouseClicked(MouseEvent e)
@@ -135,28 +108,6 @@ public class FileListView extends JList<File> {
 			}
 		}
 
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-
-		}
 	}
 
 	public void setClickMode(Boolean isDbClick)
@@ -244,8 +195,6 @@ public class FileListView extends JList<File> {
 		mCurrentPath = path;
 		mHistory.add(mCurrentPath);
 		mHistoryIndex = mHistory.size() - 1;    // index of last element
-		System.out.println(mHistory);
-		System.out.println(mHistoryIndex);
 		mCallback.pathChanged(path);
 	}
 
@@ -281,7 +230,8 @@ public class FileListView extends JList<File> {
 		changeDir(mCurrentPath.getParentFile());
 	}
 
-	public void setRightPopMenu(JPopupMenu mRightPopMenu) {
+	public void setRightPopMenu(JPopupMenu mRightPopMenu)
+	{
 		this.mRightPopMenu = mRightPopMenu;
 	}
 
