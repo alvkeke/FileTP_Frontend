@@ -3,6 +3,7 @@ package FileTP_Front.GUI.FileList;
 import sun.awt.shell.ShellFolder;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.io.File;
@@ -43,6 +44,7 @@ public class FileListRender extends DefaultListCellRenderer {
 		ImageIcon ico = getBigIcon(f);
 		setIcon(ico);
 		setText(f.getName());
+		setBorder(new EmptyBorder(5, 10, 5, 0));
 
 		return this;
 	}

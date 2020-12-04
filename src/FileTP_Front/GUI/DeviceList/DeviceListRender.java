@@ -4,6 +4,7 @@ import FileTP_Front.Net.Device;
 import FileTP_Front.Resource.ResLoader;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class DeviceListRender extends DefaultListCellRenderer {
@@ -60,6 +61,8 @@ public class DeviceListRender extends DefaultListCellRenderer {
 			ico.setImage(ico.getImage().getScaledInstance(32, 32, Image.SCALE_DEFAULT));
 			setIcon(ico);
 		}
+
+		setBorder(new EmptyBorder(5, 10, 5, 0));
 
 		return this;
 	}
