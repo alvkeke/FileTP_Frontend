@@ -53,10 +53,14 @@ public class DeviceListView extends JList<Device> {
 					if (e.equals(DataFlavor.stringFlavor))
 					{
 						String name = (String)t.getTransferData(e);
-						File f = new File(name);
-						if (f.exists())
+						String[] filenames = name.split("\n");
+						for (String s : filenames)
 						{
-							sendFile(f);
+							File f = new File(s);
+							if (f.exists())
+							{
+								sendFile(f);
+							}
 						}
 					}
 					else if (e.equals(DataFlavor.javaFileListFlavor))
