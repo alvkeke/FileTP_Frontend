@@ -29,6 +29,7 @@ public class FileListView extends JList<File> {
 		FileListRender listRender = new FileListRender();
 		setCellRenderer(listRender);
 
+		setDragEnabled(true);
 		setClickMode(false);
 		// one click mode by default.
 
